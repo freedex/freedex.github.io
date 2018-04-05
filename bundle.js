@@ -55713,18 +55713,26 @@ class MicroDexHelper {
     if (order_element.token_give == "0x0000000000000000000000000000000000000000" && order_element.token_get.toLowerCase() == base_pair_token_address.toLowerCase()) {
       get_decimal_places = 8;
       order_element.order_type = "bid";
+
+      order_element.amount_get_formatted = this.formatAmountWithDecimals(order_element.amount_get, get_decimal_places);
+      order_element.amount_give_formatted = this.formatAmountWithDecimals(order_element.amount_give, give_decimal_places);
+
+      order_element.cost_ratio = order_element.amount_give_formatted / order_element.amount_get_formatted;
     }
 
     //asks get eth
     if (order_element.token_get == "0x0000000000000000000000000000000000000000" && order_element.token_give.toLowerCase() == base_pair_token_address.toLowerCase()) {
       give_decimal_places = 8;
       order_element.order_type = "ask";
+
+      console.log("found ask ", JSON.stringify(order_element));
+
+      order_element.amount_get_formatted = this.formatAmountWithDecimals(order_element.amount_get, get_decimal_places);
+      order_element.amount_give_formatted = this.formatAmountWithDecimals(order_element.amount_give, give_decimal_places);
+
+      order_element.cost_ratio = order_element.amount_get_formatted / order_element.amount_give_formatted;
     }
 
-    order_element.amount_get_formatted = this.formatAmountWithDecimals(order_element.amount_get, get_decimal_places);
-    order_element.amount_give_formatted = this.formatAmountWithDecimals(order_element.amount_give, give_decimal_places);
-
-    order_element.cost_ratio = order_element.amount_give_formatted / order_element.amount_get_formatted;
     if (order_element.cost_ratio < 0.0000000001) {
       order_element.cost_ratio = 0;
     }
@@ -55805,7 +55813,7 @@ class MicroDexHelper {
       if (order_element.order_type == "bid") {
         order_bid_list.push(order_element);
         order_bid_list.sort(function (a, b) {
-          return a.cost_ratio - b.cost_ratio;
+          return b.cost_ratio - a.cost_ratio;
         });
         __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].set(orderContainer, 'bids', { bid_list: order_bid_list });
       }
@@ -55995,7 +56003,7 @@ class MicroDexHelper {
 
   //initiated from a little form - makes a listrow
   async createOrder(tokenGet, amountGet, tokenGive, amountGive, expires, callback) {
-    console.log('withdraw token', tokenGet, amountGet, tokenGive, amountGive, expires);
+    console.log('create order ', tokenGet, amountGet, tokenGive, amountGive, expires);
 
     var contract = this.ethHelper.getWeb3ContractInstance(this.web3, microDexContract.blockchain_address, microDexABI.abi);
 
