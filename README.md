@@ -1,2 +1,3 @@
 # freedex.github.io
-Freedex
+
+Exchange for 0xBitcoin
